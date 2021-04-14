@@ -102,3 +102,13 @@ dist
 
 # TernJS port file
 .tern-port
+
+# MacOS files
+.DS_Store
+
+# VSCode settings
+.vs_code/
+
+# Misc files
+*.pdf
+*.zip
