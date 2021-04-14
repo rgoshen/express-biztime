@@ -80,4 +80,33 @@ router.post("/", async function (req, res, next) {
   }
 });
 
+/** PUT /[code] => update company
+ *
+ * {name, description}  =>  {company: {code, name, description}}
+ *
+ * */
+
+router.put("/:code", async function (req, res, next) {
+  try {
+    let { name, description } = req.body;
+    let code = req.params.code;
+
+    const result = await db.query(
+      `UPDATE companies
+           SET name=$1, description=$2
+           WHERE code = $3
+           RETURNING code, name, description`,
+      [name, description, code]
+    );
+
+    if (result.rows.length === 0) {
+      throw new ExpressError(`No such company: ${code}`, 404);
+    } else {
+      return res.json({ company: result.rows[0] });
+    }
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
