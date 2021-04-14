@@ -16,7 +16,7 @@ router.get("/", async function (req, res, next) {
   try {
     const result = await db.query(
       `SELECT id, comp_code
-           FROM invoices 
+           FROM invoices
            ORDER BY id`
     );
 
@@ -42,16 +42,16 @@ router.get("/:id", async function (req, res, next) {
     let id = req.params.id;
 
     const result = await db.query(
-      `SELECT i.id, 
-                  i.comp_code, 
-                  i.amt, 
-                  i.paid, 
-                  i.add_date, 
-                  i.paid_date, 
-                  c.name, 
-                  c.description 
+      `SELECT i.id,
+                  i.comp_code,
+                  i.amt,
+                  i.paid,
+                  i.add_date,
+                  i.paid_date,
+                  c.name,
+                  c.description
            FROM invoices AS i
-             INNER JOIN companies AS c ON (i.comp_code = c.code)  
+             INNER JOIN companies AS c ON (i.comp_code = c.code)
            WHERE id = $1`,
       [id]
     );
@@ -75,6 +75,29 @@ router.get("/:id", async function (req, res, next) {
     };
 
     return res.json({ invoice: invoice });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** POST / => add new invoice
+ *
+ * {comp_code, amt}  =>  {id, comp_code, amt, paid, add_date, paid_date}
+ *
+ * */
+
+router.post("/", async function (req, res, next) {
+  try {
+    let { comp_code, amt } = req.body;
+
+    const result = await db.query(
+      `INSERT INTO invoices (comp_code, amt) 
+           VALUES ($1, $2) 
+           RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+      [comp_code, amt]
+    );
+
+    return res.json({ invoice: result.rows[0] });
   } catch (err) {
     return next(err);
   }
