@@ -26,4 +26,33 @@ router.get("/", async function (req, res, next) {
   }
 });
 
+/** GET /[code] => detail on company
+ *
+ * =>  {company: {code, name, description, invoices: [id, ...]}}
+ *
+ * */
+
+router.get("/:code", async function (req, res, next) {
+  try {
+    let code = req.params.code;
+
+    const compResult = await db.query(
+      `SELECT code, name, description
+           FROM companies
+           WHERE code = $1`,
+      [code]
+    );
+
+    if (compResult.rows.length === 0) {
+      throw new ExpressError(`No such company: ${code}`, 404);
+    }
+
+    const company = compResult.rows[0];
+
+    return res.json({ company: company });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
