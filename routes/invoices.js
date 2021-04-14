@@ -151,4 +151,31 @@ router.put("/:id", async function (req, res, next) {
   }
 });
 
+/** DELETE /[code] => delete invoice
+ *
+ * => {status: "deleted"}
+ *
+ */
+
+router.delete("/:id", async function (req, res, next) {
+  try {
+    let id = req.params.id;
+
+    const result = await db.query(
+      `DELETE FROM invoices
+           WHERE id = $1
+           RETURNING id`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      throw new ExpressError(`No such invoice: ${id}`, 404);
+    }
+
+    return res.json({ status: "deleted" });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
