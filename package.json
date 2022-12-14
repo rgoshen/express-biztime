@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/rgoshen/express-biztime#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "pg": "^8.6.0",
     "slugify": "^1.5.0"
   },
